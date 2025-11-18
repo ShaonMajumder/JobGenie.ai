@@ -189,6 +189,110 @@ After seeding, log in with:
 
 Update the profile to include your resume text and native currency for the best results.
 
+## 💬 Why JobGenie.ai?
+
+Job searching is stressful, slow, and often lonely.  
+JobGenie.ai turns it into a **guided**, **data-backed**, and **AI-assisted** experience.
+
+If you want:
+
+-   Better applications
+-   Faster iterations
+-   Smarter interviews
+-   Stronger negotiation & follow-ups
+
+…then JobGenie.ai is built for you.
+
+---
+
+## <a id="why-it-stands-out"></a>🛡️ Why JobGenie.ai Stands Out
+
+-   ⚙️ **Built for real job search workflows**  
+    Not just a playground for prompts—every feature is aligned with a real pipeline: JD → application → interviews → offer or rejection → re-approach.
+
+-   🧠 **Prompt-centric & UI-tunable**  
+    Prompts are first-class citizens in the database and UI, making it easy to experiment without redeploying.
+
+-   🔌 **LLM-agnostic core**  
+    Start with Gemini, plug in any other LLM later with a single service interface.
+
+-   🗂️ **Job-aware memory**  
+    Every job keeps its own history: sessions, conversations, ATS insights, salary context.
+
+-   🚀 **SaaS-ready design**  
+    Clean separation of users, jobs, prompts, configs — ready for subscriptions, teams, and usage-based billing.
+
+---
+
+## <a id="notes"></a>🧠 Development Notes (WIP)
+
+-   🚧 Adding richer analytics for:
+    -   Per-job success probability signals
+    -   Which prompts lead to higher ATS scores
+-   🔜 Multi-tenant mode for teams and agencies
+-   📊 Advanced ATS insights grouped by:
+    -   Skills, responsibilities, culture fit, and seniority level
+-   📤 Export options:
+    -   PDF / DOCX career packs
+    -   Email-ready templates
+
+---
+
+## <a id="pricing"></a>💸 Pricing (Concept)
+
+| Plan           | Ideal For              | Features                                                       |
+| -------------- | ---------------------- | -------------------------------------------------------------- |
+| **Free**       | Individual job seekers | Limited monthly career packs, basic ATS & salary insights      |
+| **Pro**        | Power users            | Unlimited jobs, deeper ATS analytics, multiple resume profiles |
+| **Team**       | Agencies / bootcamps   | Shared workspaces, shared prompts, centralized analytics       |
+| **Enterprise** | Platforms / HR tools   | API access, SSO, custom LLM routing, white-label options       |
+
+> The open-source foundation focuses on the engine and flows; SaaS pricing is adaptable per market.
+
+---
+
+## <a id="license"></a>📜 License
+
+JobGenie.ai is currently structured as a **portfolio / starter SaaS project**.
+
+When taking it public, you can choose a license such as:
+
+-   **MIT** – for maximal open-source adoption
+-   **AGPL-3.0** – to ensure improvements to hosted versions are shared
+-   **Commercial / dual-licensed** – for protecting proprietary SaaS offerings
+
+Pick the license that best matches your goals for community vs. commercial use.
+
+---
+
+## <a id="contribute"></a>🤝 Contribute
+
+Ideas and contributions are welcome, especially around:
+
+-   Better prompt design for ATS and salary guidance
+-   New interview patterns for specific roles (backend, data, PM, etc.)
+-   Additional LLM integrations and evaluation tooling
+
+You can fork, adapt, and extend JobGenie.ai into your own product or internal tool.
+
+---
+
+## <a id="revenue"></a>💰 Revenue Model (If Commercialized)
+
+-   **Freemium SaaS**
+
+    -   Free tier with limited packs and basic insights
+    -   Paid tiers for volume, analytics, and more advanced workflows
+
+-   **B2B integrations**
+
+    -   Offer the engine to job boards, bootcamps, HR SaaS as a white-label component
+
+-   **Enterprise customizations**
+    -   Dedicated hosting, data residency, compliance, and deep ATS integrations
+
+This creates a sustainable path while still enabling an open-source or hybrid core.
+
 ---
 
 ## <a id="credit"></a>👨‍💻 Built & Maintained By
