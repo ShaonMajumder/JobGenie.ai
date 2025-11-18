@@ -1,8 +1,29 @@
-## JobGenie.ai
+# JobGenie.ai
 
-Your AI-Powered Career Co-Pilot — Apply Smarter, Interview Stronger, Get Hired Faster.
+## Your AI-Powered Career Co-Pilot — Apply Smarter, Interview Stronger, Get Hired Faster.
 
 JobGenie.ai is an AI-powered SaaS platform that transforms the job search into a fast, guided, and confidence-boosting experience.
+
+It works like a personal career coach — available 24/7.
+
+Whether you're a job seeker wanting an edge or an employer needing better insights, JobGenie helps you win the hiring process.
+
+<p align="center">
+  <a href="#demo">Demo</a> •
+  <a href="#features">Features</a> •
+  <a href="#tech-stack">Tech Stack</a> •
+  <a href="#testing">Testing</a> •
+  <a href="#system-design">System Design</a> •
+  <a href="#why-it-stands-out">Why it Stands Out</a> •
+  <a href="#notes">Notes</a> •
+  <a href="#pricing">Pricing</a> •
+  <a href="#license">License</a> •
+  <a href="#contribute">Contribute</a> •
+  <a href="#revenue">Revenue Model</a> •
+  <a href="#credit">Credit</a>
+</p>
+
+## <a id="tech-stack"></a>🚀 Features
 
 Paste a job description, your resume, and your baseline salary — JobGenie instantly generates:
 
@@ -22,11 +43,6 @@ Paste a job description, your resume, and your baseline salary — JobGenie inst
 
 -   📚 A full career “prep pack”
 
-It works like a personal career coach — available 24/7.
-
-Whether you're a job seeker wanting an edge or an employer needing better insights, JobGenie helps you win the hiring process.
-
-🚀 Features
 🔮 AI Career Co-Pilot
 
 Understand any job instantly. Get actionable insights tailored to your resume and background.
