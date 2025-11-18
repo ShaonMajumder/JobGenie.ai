@@ -23,7 +23,11 @@ Whether you're a job seeker wanting an edge or an employer needing better insigh
   <a href="#credit">Credit</a>
 </p>
 
-## <a id="tech-stack"></a>🚀 Features
+---
+
+## <a id="demo"></a>🎬 Demo
+
+![JobGenie.ai Demo](screenshots/demo-2025-05-19_12-25-57.gif)
 
 Paste a job description, your resume, and your baseline salary — JobGenie instantly generates:
 
@@ -42,6 +46,10 @@ Paste a job description, your resume, and your baseline salary — JobGenie inst
 -   🔁 Follow-up messages
 
 -   📚 A full career “prep pack”
+
+---
+
+## <a id="tech-stack"></a>🚀 Features
 
 -   **Career pack workflow** – Stores every job, calls Gemini via prompt templates, and captures cover letters, tailored resumes, salary ranges (native + USD), and ATS scores per session.
 -   **Job tracking pipeline** – Manage statuses (`Not applied`, `Applied`, `Interview scheduled`, etc.), review timelines, and regenerate content whenever the JD or resume changes.
