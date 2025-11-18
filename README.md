@@ -1,4 +1,4 @@
-# JobGenie.ai
+# <img src="public/favicon.svg" alt="JobGenie.ai" style="height: 1em; vertical-align: middle;"> JobGenie.ai
 
 ## Your AI-Powered Career Co-Pilot — Apply Smarter, Interview Stronger, Get Hired Faster.
 

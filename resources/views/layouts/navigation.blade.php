@@ -6,7 +6,15 @@
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
                     <a href="{{ route('dashboard') }}">
-                        <x-application-logo class="block h-9 w-auto fill-current text-gray-800" />
+                        {{-- <x-application-logo class="block h-9 w-auto fill-current text-gray-800" /> --}}
+                        <img
+                            src="{{ asset('favicon.svg') }}"
+                            alt="JobGenie.ai"
+                            class="block h-9 w-auto"
+                        >
+                        <span class="hidden sm:inline-block font-semibold text-gray-900">
+                            JobGenie.ai
+                        </span>
                     </a>
                 </div>
 
