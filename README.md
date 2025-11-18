@@ -43,6 +43,14 @@ Paste a job description, your resume, and your baseline salary — JobGenie inst
 
 -   📚 A full career “prep pack”
 
+-   **Career pack workflow** – Stores every job, calls Gemini via prompt templates, and captures cover letters, tailored resumes, salary ranges (native + USD), and ATS scores per session.
+-   **Job tracking pipeline** – Manage statuses (`Not applied`, `Applied`, `Interview scheduled`, etc.), review timelines, and regenerate content whenever the JD or resume changes.
+-   **Conversation helpers** – Interview prep, negotiation, and follow-up generators with full history saved per job.
+-   **Prompt management** – Admin UI to edit prompts, clone versions, and toggle activity without redeploying.
+-   **LLM configuration overrides** – UI to switch provider/model and manage encrypted API keys overriding `.env`.
+-   **PostgreSQL + queues** – Database-backed sessions, conversations, and queue tables (DB driver configured with dedicated `queue_jobs` table).
+-   **Dockerized dev stack** – PHP-FPM, Nginx, and PostgreSQL services wired for local development.
+
 🔮 AI Career Co-Pilot
 
 Understand any job instantly. Get actionable insights tailored to your resume and background.
@@ -80,16 +88,6 @@ Modular LlmServiceInterface
 <!-- — all backed by a prompt-managed LLM stack. -->
 
 JobGenie.ai is an AI-powered web application designed to streamline the job application and hiring process. It empowers **job seekers** to create tailored cover letters and estimate expected salaries based on industry standards, experience, and location. Simultaneously, it assists **employers** in identifying and connecting with top talent by leveraging AI-driven insights. The app fosters career growth for job seekers and simplifies talent acquisition for companies.
-
-### Features
-
--   **Career pack workflow** – Stores every job, calls Gemini via prompt templates, and captures cover letters, tailored resumes, salary ranges (native + USD), and ATS scores per session.
--   **Job tracking pipeline** – Manage statuses (`Not applied`, `Applied`, `Interview scheduled`, etc.), review timelines, and regenerate content whenever the JD or resume changes.
--   **Conversation helpers** – Interview prep, negotiation, and follow-up generators with full history saved per job.
--   **Prompt management** – Admin UI to edit prompts, clone versions, and toggle activity without redeploying.
--   **LLM configuration overrides** – UI to switch provider/model and manage encrypted API keys overriding `.env`.
--   **PostgreSQL + queues** – Database-backed sessions, conversations, and queue tables (DB driver configured with dedicated `queue_jobs` table).
--   **Dockerized dev stack** – PHP-FPM, Nginx, and PostgreSQL services wired for local development.
 
 ---
 

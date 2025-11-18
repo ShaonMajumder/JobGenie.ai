@@ -17,6 +17,7 @@ class DashboardController extends Controller
             ->take(5)
             ->get();
 
+            // dd($user->resume_text);
         return view('dashboard', [
             'jobs' => $recentJobs,
             'workTypes' => Job::WORK_TYPES,
@@ -24,6 +25,7 @@ class DashboardController extends Controller
             'statusOptions' => JobStatus::options(),
             'defaultCurrency' => $user->native_currency ?? 'USD',
             'defaultResume' => $user->resume_text,
+            'defaultBaselineSalary' => $user->recent_salary,
         ]);
     }
 }

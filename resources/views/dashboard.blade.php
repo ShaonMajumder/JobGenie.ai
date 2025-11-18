@@ -13,34 +13,34 @@
                 <section class="bg-white border border-slate-100 shadow-sm rounded-xl p-6">
                     <h2 class="text-lg font-semibold text-slate-800 mb-1">New job session</h2>
                     <p class="text-sm text-slate-500 mb-4">Provide the job details and your baseline salary to tailor the cover letter, resume, salary ranges, and ATS insights.</p>
-                    <form method="POST" action="{{ route('jobs.store') }}" class="space-y-4">
+                    <form id="job-session-form" method="POST" action="{{ route('jobs.store') }}" class="space-y-4">
                         @csrf
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <x-input-label for="title" value="Job title" />
-                                <x-text-input id="title" name="title" type="text" class="mt-1 block w-full" required />
+                                <x-text-input id="title" name="title" type="text" class="mt-1 block w-full" value="{{ old('title') }}" required />
                                 <x-input-error :messages="$errors->get('title')" class="mt-1" />
                             </div>
                             <div>
                                 <x-input-label for="company_name" value="Company" />
-                                <x-text-input id="company_name" name="company_name" type="text" class="mt-1 block w-full" required />
+                                <x-text-input id="company_name" name="company_name" type="text" class="mt-1 block w-full" value="{{ old('company_name') }}" required />
                                 <x-input-error :messages="$errors->get('company_name')" class="mt-1" />
                             </div>
                             <div>
                                 <x-input-label for="company_website" value="Company Career Page" />
-                                <x-text-input id="company_website" name="company_website" type="url" class="mt-1 block w-full" placeholder="https://example.com" />
+                                <x-text-input id="company_website" name="company_website" type="url" class="mt-1 block w-full" placeholder="https://example.com" value="{{ old('company_website') }}" />
                                 <x-input-error :messages="$errors->get('company_website')" class="mt-1" />
                             </div>
                             <div>
                                 <x-input-label for="location" value="Location" />
-                                <x-text-input id="location" name="location" type="text" class="mt-1 block w-full" placeholder="Remote, New York, etc." />
+                                <x-text-input id="location" name="location" type="text" class="mt-1 block w-full" placeholder="Remote, New York, etc." value="{{ old('location') }}" />
                                 <x-input-error :messages="$errors->get('location')" class="mt-1" />
                             </div>
                             <div>
                                 <x-input-label for="work_type" value="Work type" />
                                 <select id="work_type" name="work_type" class="mt-1 w-full rounded-md border-gray-300">
                                     @foreach($workTypes as $key => $label)
-                                        <option value="{{ $key }}">{{ $label }}</option>
+                                        <option value="{{ $key }}" {{ old('work_type') == $key ? 'selected' : '' }}>{{ $label }}</option>
                                     @endforeach
                                 </select>
                                 <x-input-error :messages="$errors->get('work_type')" class="mt-1" />
@@ -49,7 +49,7 @@
                                 <x-input-label for="job_type" value="Job type" />
                                 <select id="job_type" name="job_type" class="mt-1 w-full rounded-md border-gray-300">
                                     @foreach($jobTypes as $key => $label)
-                                        <option value="{{ $key }}">{{ $label }}</option>
+                                        <option value="{{ $key }}" {{ old('job_type') == $key ? 'selected' : '' }}>{{ $label }}</option>
                                     @endforeach
                                 </select>
                                 <x-input-error :messages="$errors->get('job_type')" class="mt-1" />
@@ -57,23 +57,23 @@
                         </div>
                         <div>
                             <x-input-label for="job_description_url" value="Job description link" />
-                            <x-text-input id="job_description_url" name="job_description_url" type="url" class="mt-1 block w-full" placeholder="https://..." />
+                            <x-text-input id="job_description_url" name="job_description_url" type="url" class="mt-1 block w-full" placeholder="https://..." value="{{ old('job_description_url') }}" />
                             <x-input-error :messages="$errors->get('job_description_url')" class="mt-1" />
                         </div>
                         <div>
                             <x-input-label for="job_description" value="Job description" />
-                            <textarea id="job_description" name="job_description" rows="5" class="mt-1 w-full rounded-md border-gray-300" required></textarea>
+                            <textarea id="job_description" name="job_description" rows="5" class="mt-1 w-full rounded-md border-gray-300" required>{{ old('job_description') }}</textarea>
                             <x-input-error :messages="$errors->get('job_description')" class="mt-1" />
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div class="md:col-span-2">
                                 <x-input-label for="baseline_salary" value="Baseline salary" />
-                                <x-text-input id="baseline_salary" name="baseline_salary" type="number" step="0.01" class="mt-1 block w-full" placeholder="65000" />
+                                <x-text-input id="baseline_salary" name="baseline_salary" type="number" step="0.01" class="mt-1 block w-full" placeholder="65000" value="{{ old('baseline_salary', $defaultBaselineSalary) }}" />
                                 <x-input-error :messages="$errors->get('baseline_salary')" class="mt-1" />
                             </div>
                             <div>
                                 <x-input-label for="baseline_currency" value="Currency" />
-                                <x-text-input id="baseline_currency" name="baseline_currency" type="text" class="mt-1 block w-full uppercase" value="{{ $defaultCurrency }}" />
+                                <x-text-input id="baseline_currency" name="baseline_currency" type="text" class="mt-1 block w-full uppercase" value="{{ old('baseline_currency', $defaultCurrency) }}" />
                                 <x-input-error :messages="$errors->get('baseline_currency')" class="mt-1" />
                             </div>
                         </div>

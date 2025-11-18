@@ -83,6 +83,13 @@ class JobController extends Controller
             'input_resume_text' => $data['resume_text'] ?? $user->resume_text,
         ]));
 
+        // Persist last-used values on the user so the dashboard can prefill next time
+        $user->update([
+            'native_currency' => $data['baseline_currency'] ?? $user->native_currency,
+            'recent_salary' => $data['baseline_salary'] ?? $user->recent_salary,
+            'resume_text' => $data['resume_text'] ?? $user->resume_text,
+        ]);
+
         return redirect()
             ->route('jobs.show', $job)
             ->with('status', 'Career pack generated successfully.');
