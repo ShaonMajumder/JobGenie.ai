@@ -51,51 +51,129 @@ Paste a job description, your resume, and your baseline salary — JobGenie inst
 
 ## <a id="tech-stack"></a>🚀 Features
 
--   **Career pack workflow** – Stores every job, calls Gemini via prompt templates, and captures cover letters, tailored resumes, salary ranges (native + USD), and ATS scores per session.
--   **Job tracking pipeline** – Manage statuses (`Not applied`, `Applied`, `Interview scheduled`, etc.), review timelines, and regenerate content whenever the JD or resume changes.
--   **Conversation helpers** – Interview prep, negotiation, and follow-up generators with full history saved per job.
--   **Prompt management** – Admin UI to edit prompts, clone versions, and toggle activity without redeploying.
--   **LLM configuration overrides** – UI to switch provider/model and manage encrypted API keys overriding `.env`.
--   **PostgreSQL + queues** – Database-backed sessions, conversations, and queue tables (DB driver configured with dedicated `queue_jobs` table).
--   **Dockerized dev stack** – PHP-FPM, Nginx, and PostgreSQL services wired for local development.
+## <a id="features"></a>🚀 Features
 
-🔮 AI Career Co-Pilot
+### 1. Core AI Career Pack
 
-Understand any job instantly. Get actionable insights tailored to your resume and background.
+For every job session, JobGenie generates:
 
-📝 Smart Document Generator
+-   🎯 **Tailored cover letters** aligned with the JD and your profile
+-   📄 **Resume rewrites & improvement suggestions** to match required skills
+-   📊 **ATS optimization insights** and an **ATS score** for that role
+-   💰 **Salary guidance** in your native currency + USD (monthly and yearly)
+-   🧮 **Salary baselines** based on:
+    -   Market range
+    -   Company’s country & job type (remote / hybrid / onsite, full-time / part-time / contract)
+    -   Your skills and experience for that role
 
-Generate cover letters, resume edits, ATS-friendly summaries, and communication templates.
+### 2. Smart Memory & Autofill
 
-💬 Interview Trainer
+JobGenie remembers your key inputs so you don’t start from scratch every time:
 
-Practice with AI-generated questions, ideal answers, and role-specific preparation guides.
+-   ✅ Stores **resume text**, **native currency**, and **recent salary** in your profile
+-   ✅ Saves **baseline salary**, **job title**, and **company info** per job
+-   ✅ When you start a new job session:
+    -   Your **last used resume**, **baseline salary**, and **currency** are **auto-filled**
+    -   You can **edit or override** them anytime
+-   ✅ Each job retains its own history: cover letters, resumes, ATS scores, salary ranges, and notes
 
-💸 Salary Intelligence
+This makes rapid-fire applications and iteration across many roles much faster.
 
-Get realistic salary expectations using job description + user experience + market data logic.
+### 3. Job Tracking & Interview Workflow
 
-🧩 Prompt Management System
+Turn chaotic job hunting into a clean pipeline:
 
-Edit prompts from the UI — no redeploy needed.
+-   🗂️ **Job tracking dashboard**
 
-🗄️ Job Tracking Dashboard
+    -   Statuses like `Not applied`, `Applied`, `Interview scheduled`, `Offer received`, `Rejected`, etc.
+    -   View all sessions, ATS scores, and salary insights per job
 
-Track applications, status updates, and interview stages.
+-   🔁 **Revisit any job**
 
-🧠 LLM-Ready Architecture
+    -   Regenerate or tweak cover letters & resumes
+    -   Update baseline or target salary
+    -   Re-apply or follow up when opportunities reopen
 
-Multi-provider support
+-   📅 **Interview & offer stages**
+    -   Update status: `Call for interview`, `Offer letter received`, `Rejected`, etc.
+    -   Each status unlocks **contextual helpers**:
+        -   “Prepare for interview” prompts
+        -   Negotiation helpers using your **email/chat transcripts**
+        -   Follow-up templates & cadence suggestions
 
-Gemini API integrated
+### 4. Conversation Helpers (Per Job)
 
-Versioned prompt storage
+Every job has its own AI “thread”:
 
-Modular LlmServiceInterface
+-   🎤 **Interview prep**
 
-<!-- — all backed by a prompt-managed LLM stack. -->
+    -   Role-specific Q&A
+    -   Technical + behavioral questions
+    -   Suggested STAR-style answers
 
-JobGenie.ai is an AI-powered web application designed to streamline the job application and hiring process. It empowers **job seekers** to create tailored cover letters and estimate expected salaries based on industry standards, experience, and location. Simultaneously, it assists **employers** in identifying and connecting with top talent by leveraging AI-driven insights. The app fosters career growth for job seekers and simplifies talent acquisition for companies.
+-   🤝 **Negotiation helper**
+
+    -   Paste recruiter emails or chat snippets
+    -   Get response drafts that balance confidence and politeness
+    -   Suggestions on when to push and when to compromise
+
+-   🔁 **Follow-up assistant**
+    -   Follow-up messages after interviews, ghosting, or rejections
+    -   Re-approach templates when roles reopen
+    -   Company revisit notes (website, careers page, application history)
+
+All conversations are stored **per job**, so context is never lost.
+
+### 5. Prompt Management & Experimentation
+
+Built for people who love tuning prompts:
+
+-   🧩 **Prompt management table**
+
+    -   Single `prompts` table for all flows (career pack, ATS, interview, negotiation, follow-up, etc.)
+    -   Fields: `slug`, `scope`, `role`, `version`, `is_active`, `content`, `description`, timestamps
+
+-   🧪 **Clone & versioning**
+
+    -   “Clone version” action in the UI
+    -   New version gets `version + 1` and becomes active
+    -   Older versions remain in history (can be re-activated)
+
+-   🛠️ **Live editing**
+    -   Edit system/user prompts from the web UI
+    -   No redeploy needed
+    -   Cache is flushed when prompts change so new runs use the latest copy
+
+This makes JobGenie a powerful playground for **prompt engineering for careers**.
+
+### 6. LLM & Configuration Layer
+
+-   🔌 **LLM-agnostic architecture**
+
+    -   Pluggable `LlmServiceInterface`
+    -   Gemini is wired in by default, but you can add other providers
+
+-   🔑 **Config hierarchy**
+    -   Primary keys and models loaded from `.env`
+    -   Admin UI allows:
+        -   Overriding provider/model
+        -   Securely storing encrypted API keys in DB
+    -   UI overrides take precedence over `.env` but you can always fall back
+
+### 7. Developer & SaaS Foundations
+
+-   🗄️ **Persistent job sessions**
+    -   PostgreSQL-backed storage for jobs, sessions, conversations, prompts, and configs
+-   🧵 **Queues**
+    -   Database or Redis queue support for background generation
+-   🐳 **Dockerized dev stack**
+    -   PHP-FPM + Nginx + PostgreSQL for local development
+-   👥 **User accounts**
+    -   Authenticated, per-user job history & preferences
+-   💼 **SaaS-ready design**
+    -   Clear separation of `users`, `jobs`, `job_sessions`, `job_conversations`, `prompts`, `app_configs`
+
+JobGenie.ai is designed to serve **individual job seekers** today, and scale into **teams, agencies, and platforms** tomorrow.
 
 ---
 
