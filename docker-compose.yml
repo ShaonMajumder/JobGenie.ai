@@ -1,0 +1,77 @@
+version: "3.9"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    image: jobgenie-app
+    container_name: jobgenie-app
+    restart: unless-stopped
+    working_dir: /var/www/html
+    volumes:
+      - .:/var/www/html # Mount whole project
+      - vendor:/var/www/html/vendor # Keep vendor in a volume
+      - composer_cache:/composer/cache
+    environment:
+      COMPOSER_CACHE_DIR: /composer/cache
+      APP_ENV: ${APP_ENV:-local}
+      APP_ENV_FILE: .env.${APP_ENV:-local}
+      DB_CONNECTION: pgsql
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: ${DB_DATABASE:-jobgenie}
+      DB_USERNAME: ${DB_USERNAME:-jobgenie}
+      DB_PASSWORD: ${DB_PASSWORD:-secret}
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - jobgenie
+
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: jobgenie-nginx
+    restart: unless-stopped
+    ports:
+      - "8000:80"
+    volumes:
+      - .:/var/www/html
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - app
+    networks:
+      - jobgenie
+
+  postgres:
+    image: postgres:15
+    container_name: jobgenie-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_DATABASE:-jobgenie}
+      POSTGRES_USER: ${DB_USERNAME:-jobgenie}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-secret}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - jobgenie
+
+  redis:
+    image: redis:alpine
+    container_name: jobgenie-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    networks:
+      - jobgenie
+
+volumes:
+  pgdata:
+  vendor:
+  composer_cache:
+
+networks:
+  jobgenie:
+    driver: bridge
