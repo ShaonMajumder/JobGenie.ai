@@ -13,7 +13,8 @@ use Throwable;
 
 class KillBillClient
 {
-    public function __construct(private readonly array $config = [])
+    // private readonly array $config = [] -- code review needed
+    public function __construct(?array $config = null)
     {
         $this->config = $config ?: config('billing.killbill', []);
     }

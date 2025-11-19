@@ -191,6 +191,7 @@ JobGenie.ai is designed to serve **individual job seekers** today, and scale int
 | **Prompt Mgmt**      | `prompts` table, `PromptService`, admin UI                                   |
 | **Deployment**       | Native PHP / Nginx, optional Docker setup                                    |
 | **Build Tools**      | Composer, NPM, Vite                                                          |
+| **Payment**          | Kill Bill, Stripe                                                            |
 
 ---
 
@@ -326,6 +327,13 @@ If you want:
 
 ## <a id="notes"></a>🧠 Development Notes (WIP)
 
+-   Planned features and improvements:
+    SMTP failure told app to setup smtp through web interface
+    if api key is missing, app to show message to setup through web interface
+    Is it possible to rewrite those parts in .env file through web interface?
+    If there is no subscription plan, app to show message to setup through web interface
+    there is no landing page for jobgenie, need registration with google , login with google is needed
+    
 -   🚧 Adding richer analytics for:
     -   Per-job success probability signals
     -   Which prompts lead to higher ATS scores
@@ -340,13 +348,13 @@ If you want:
 
 ## <a id="pricing"></a>dY', Pricing (Concept)
 
-| Plan                 | Mode      | Ideal For              | Highlights                                                                 |
-| -------------------- | --------- | ---------------------- | -------------------------------------------------------------------------- |
-| **JobSeeker Free**   | Prepaid   | Individual job seekers | 20k prepaid AI tokens with a hard stop, billing portal, invoice archive    |
-| **Pro**              | Postpaid  | Power users            | 200k included tokens + overage metering, Gemini/OpenAI ready               |
-| **Team**             | Postpaid  | Agencies / bootcamps   | Shared workspaces, pooled token reporting, centralized invoices           |
-| **Token Starter**    | Prepaid   | Token bundle buyers    | Purchase fixed token packs per month with low/out-of-token alerts          |
-| **Enterprise**       | Hybrid    | Platforms / HR tools   | API access, SSO, custom LLM routing, Kill Bill orchestration, white-label |
+| Plan               | Mode     | Ideal For              | Highlights                                                                |
+| ------------------ | -------- | ---------------------- | ------------------------------------------------------------------------- |
+| **JobSeeker Free** | Prepaid  | Individual job seekers | 20k prepaid AI tokens with a hard stop, billing portal, invoice archive   |
+| **Pro**            | Postpaid | Power users            | 200k included tokens + overage metering, Gemini/OpenAI ready              |
+| **Team**           | Postpaid | Agencies / bootcamps   | Shared workspaces, pooled token reporting, centralized invoices           |
+| **Token Starter**  | Prepaid  | Token bundle buyers    | Purchase fixed token packs per month with low/out-of-token alerts         |
+| **Enterprise**     | Hybrid   | Platforms / HR tools   | API access, SSO, custom LLM routing, Kill Bill orchestration, white-label |
 
 > The open-source foundation focuses on the engine and flows; SaaS pricing is adaptable per market.
 
@@ -432,4 +440,3 @@ Specialized in scalable APIs, distributed systems, and AI integration (OpenAI, G
 -   Wrapped the LLM service with AI metering, prepaid enforcement middleware, low/out-of-token emails, and billing-aware controllers.
 -   Built the `billing:generate-monthly-invoices` command, Kill Bill webhook stub, and billing-focused feature tests.
 -   Updated configuration, docker, and README docs to cover prepaid vs postpaid plans, AI pricing, and the new SaaS billing flow.
-
