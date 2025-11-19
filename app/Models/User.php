@@ -27,6 +27,8 @@ class User extends Authenticatable
         'resume_text',
         'timezone',
         'is_admin',
+        'stripe_customer_id',
+        'google_id',
     ];
 
     /**

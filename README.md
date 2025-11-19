@@ -411,3 +411,14 @@ Open source contributor | Laravel ecosystem expert | System design & architectur
 -   GitHub: https://github.com/ShaonMajumder
 
 Specialized in scalable APIs, distributed systems, and AI integration (OpenAI, Gemini, MCP), with a track record of leading engineering teams and shipping high-impact platforms across healthcare, fintech, telecom, logistics, garments, and e-commerce.
+
+## 🆕 What This Update Added
+
+- Stripe-powered subscription billing in test mode with card capture via Stripe Elements.
+- New database tables for subscription plans, subscriptions, invoices, and AI usage records.
+- Support for prepaid AI token plans (hard cap) and postpaid plans with overage billing.
+- Central AI token metering for all LLM calls with configurable per-model pricing.
+- A customer billing portal that shows plans, invoices, and AI usage.
+- Admin UIs for managing plans and AI pricing.
+- Monthly invoice generation job and email notifications for subscription and billing events.
+- Stripe webhook handling for payment success/failure to keep local state in sync.

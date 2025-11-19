@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\PromptController as AdminPromptController;
+use App\Http\Controllers\Auth\SocialiteController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\JobConversationController;
 use App\Http\Controllers\JobController;
@@ -10,6 +11,9 @@ use App\Http\Controllers\Settings\AiConfigController;
 use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'welcome')->name('welcome');
+
+Route::get('/auth/redirect/google/redirect', [SocialiteController::class, 'redirect'])->name('oauth.google.redirect');
+Route::get('/auth/redirect/google/callback', [SocialiteController::class, 'callback'])->name('oauth.google.callback');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
