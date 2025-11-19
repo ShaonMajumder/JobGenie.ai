@@ -54,7 +54,9 @@ class CareerPackService
             ['role' => 'user', 'content' => $userPrompt],
         ];
 
-        $response = $this->llmService->generate($messages);
+        $response = $this->llmService->generate($messages, [
+            'job_id' => $job->id,
+        ]);
         // dd( $response);
 
         $parsed = $this->decodeJson($response['content']);

@@ -67,10 +67,27 @@ services:
     networks:
       - jobgenie
 
+  killbill:
+    image: killbill/killbill:latest
+    container_name: jobgenie-killbill
+    restart: unless-stopped
+    environment:
+      - KILLBILL_DAO_URL=jdbc:h2:file:/var/lib/killbill/killbill;MODE=MySQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+      - KILLBILL_DAO_USER=killbill
+      - KILLBILL_DAO_PASSWORD=killbill
+      - KILLBILL_SERVER_TEST_MODE=true
+    ports:
+      - "8080:8080"
+    volumes:
+      - killbill-data:/var/lib/killbill
+    networks:
+      - jobgenie
+
 volumes:
   pgdata:
   vendor:
   composer_cache:
+  killbill-data:
 
 networks:
   jobgenie:

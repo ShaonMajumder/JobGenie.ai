@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\OutOfTokensException;
 use App\Http\Requests\StoreJobSessionRequest;
 use App\Models\Job;
 use App\Services\CareerPackService;
@@ -26,6 +27,10 @@ class JobSessionController extends Controller
                 'baseline_salary' => $data['baseline_salary'] ?? $job->baseline_salary,
                 'resume_text' => $data['resume_text'] ?? $user->resume_text,
             ]);
+        } catch (OutOfTokensException $exception) {
+            return redirect()
+                ->route('jobs.show', $job)
+                ->with('error', $exception->getMessage());
         } catch (Throwable $exception) {
             Log::error('Career pack regeneration failed', [
                 'job_id' => $job->id,

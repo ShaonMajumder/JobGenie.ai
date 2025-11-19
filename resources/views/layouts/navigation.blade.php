@@ -26,12 +26,18 @@
                     <x-nav-link :href="route('jobs.index')" :active="request()->routeIs('jobs.*')">
                         Jobs
                     </x-nav-link>
+                    <x-nav-link :href="route('billing.index')" :active="request()->routeIs('billing.*')">
+                        Billing
+                    </x-nav-link>
                     <x-nav-link :href="Auth::user()->is_admin ? route('settings.ai') : route('profile.edit')" :active="request()->routeIs('settings.*')">
                         Settings
                     </x-nav-link>
                     @if(Auth::user()->is_admin)
                         <x-nav-link :href="route('admin.prompts.index')" :active="request()->routeIs('admin.prompts.*')">
                             Prompts
+                        </x-nav-link>
+                        <x-nav-link :href="route('admin.billing.plans.index')" :active="request()->routeIs('admin.billing.*')">
+                            Admin Billing
                         </x-nav-link>
                     @endif
                 </div>
@@ -92,12 +98,18 @@
             <x-responsive-nav-link :href="route('jobs.index')" :active="request()->routeIs('jobs.*')">
                 Jobs
             </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('billing.index')" :active="request()->routeIs('billing.*')">
+                Billing
+            </x-responsive-nav-link>
             <x-responsive-nav-link :href="Auth::user()->is_admin ? route('settings.ai') : route('profile.edit')" :active="request()->routeIs('settings.*')">
                 Settings
             </x-responsive-nav-link>
             @if(Auth::user()->is_admin)
                 <x-responsive-nav-link :href="route('admin.prompts.index')" :active="request()->routeIs('admin.prompts.*')">
                     Prompts
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.billing.plans.index')" :active="request()->routeIs('admin.billing.*')">
+                    Admin Billing
                 </x-responsive-nav-link>
             @endif
         </div>

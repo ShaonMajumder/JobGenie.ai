@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\OutOfTokensException;
 use App\Http\Requests\StoreJobConversationRequest;
 use App\Models\Job;
 use App\Services\Llm\LlmServiceInterface;
@@ -50,7 +51,13 @@ class JobConversationController extends Controller
         ];
 
         try {
-            $response = $this->llmService->generate($messages);
+            $response = $this->llmService->generate($messages, [
+                'job_id' => $job->id,
+            ]);
+        } catch (OutOfTokensException $exception) {
+            return redirect()
+                ->route('jobs.show', $job)
+                ->with('error', $exception->getMessage());
         } catch (Throwable $exception) {
             Log::error('Job conversation generation failed', [
                 'job_id' => $job->id,

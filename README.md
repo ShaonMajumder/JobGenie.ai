@@ -338,16 +338,26 @@ If you want:
 
 ---
 
-## <a id="pricing"></a>💸 Pricing (Concept)
+## <a id="pricing"></a>dY', Pricing (Concept)
 
-| Plan           | Ideal For              | Features                                                       |
-| -------------- | ---------------------- | -------------------------------------------------------------- |
-| **Free**       | Individual job seekers | Limited monthly career packs, basic ATS & salary insights      |
-| **Pro**        | Power users            | Unlimited jobs, deeper ATS analytics, multiple resume profiles |
-| **Team**       | Agencies / bootcamps   | Shared workspaces, shared prompts, centralized analytics       |
-| **Enterprise** | Platforms / HR tools   | API access, SSO, custom LLM routing, white-label options       |
+| Plan                 | Mode      | Ideal For              | Highlights                                                                 |
+| -------------------- | --------- | ---------------------- | -------------------------------------------------------------------------- |
+| **JobSeeker Free**   | Prepaid   | Individual job seekers | 20k prepaid AI tokens with a hard stop, billing portal, invoice archive    |
+| **Pro**              | Postpaid  | Power users            | 200k included tokens + overage metering, Gemini/OpenAI ready               |
+| **Team**             | Postpaid  | Agencies / bootcamps   | Shared workspaces, pooled token reporting, centralized invoices           |
+| **Token Starter**    | Prepaid   | Token bundle buyers    | Purchase fixed token packs per month with low/out-of-token alerts          |
+| **Enterprise**       | Hybrid    | Platforms / HR tools   | API access, SSO, custom LLM routing, Kill Bill orchestration, white-label |
 
 > The open-source foundation focuses on the engine and flows; SaaS pricing is adaptable per market.
+
+### Billing & Subscriptions
+
+-   Full subscription domain model (plans, subscriptions, invoices, AI usage records) backed by PostgreSQL migrations.
+-   Dockerized Kill Bill service plus a Laravel KillBillClient for account, subscription, and invoice syncing.
+-   Customer billing portal (`/billing`) showing active plan, prepaid/postpaid labels, remaining tokens, invoices, and one-click upgrades.
+-   Admin billing console for managing plans, AI pricing overrides, and invoice monitoring.
+-   AI metering that records input/output tokens, costs per provider/model, prepaid token enforcement, and low/out-of-token notifications.
+-   Monthly invoice generator (`php artisan billing:generate-monthly-invoices`) that combines subscription fees + AI usage and emails customers.
 
 ---
 
@@ -411,3 +421,15 @@ Open source contributor | Laravel ecosystem expert | System design & architectur
 -   GitHub: https://github.com/ShaonMajumder
 
 Specialized in scalable APIs, distributed systems, and AI integration (OpenAI, Gemini, MCP), with a track record of leading engineering teams and shipping high-impact platforms across healthcare, fintech, telecom, logistics, garments, and e-commerce.
+
+---
+
+## 🆕 What This Update Added
+
+-   Added subscription plans, subscriptions, invoices, and AI usage tables/models with helper methods on `User`.
+-   Integrated Kill Bill as a docker-compose service plus a Laravel KillBillClient for accounts, subscriptions, and invoices.
+-   Delivered a billing portal, admin plan & AI pricing UIs, and navigation links for both customers and admins.
+-   Wrapped the LLM service with AI metering, prepaid enforcement middleware, low/out-of-token emails, and billing-aware controllers.
+-   Built the `billing:generate-monthly-invoices` command, Kill Bill webhook stub, and billing-focused feature tests.
+-   Updated configuration, docker, and README docs to cover prepaid vs postpaid plans, AI pricing, and the new SaaS billing flow.
+

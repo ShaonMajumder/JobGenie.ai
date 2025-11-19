@@ -68,4 +68,56 @@ class User extends Authenticatable
     {
         return $this->hasMany(JobConversation::class);
     }
+
+    public function subscriptions(): HasMany
+    {
+        return $this->hasMany(Subscription::class);
+    }
+
+    public function invoices(): HasMany
+    {
+        return $this->hasMany(Invoice::class);
+    }
+
+    public function aiUsageRecords(): HasMany
+    {
+        return $this->hasMany(AiUsageRecord::class);
+    }
+
+    public function activeSubscription(): ?Subscription
+    {
+        return $this->subscriptions()
+            ->whereIn('status', Subscription::ACTIVE_STATUSES)
+            ->latest('current_period_start')
+            ->first();
+    }
+
+    public function currentPlan(): ?SubscriptionPlan
+    {
+        return $this->activeSubscription()?->plan;
+    }
+
+    public function hasActiveSubscription(): bool
+    {
+        return (bool) $this->activeSubscription();
+    }
+
+    public function remainingTokensForCurrentPeriod(): int
+    {
+        $subscription = $this->activeSubscription();
+        $plan = $subscription?->plan;
+
+        if (! $subscription || ! $plan || ! $plan->includesTokens()) {
+            return 0;
+        }
+
+        $periodStart = $subscription->current_period_start ?? now()->startOfMonth();
+        $periodEnd = $subscription->current_period_end ?? now()->endOfMonth();
+
+        $used = $this->aiUsageRecords()
+            ->whereBetween('created_at', [$periodStart, $periodEnd])
+            ->sum('total_tokens');
+
+        return max(0, (int) $plan->ai_included_tokens_monthly - (int) $used);
+    }
 }
