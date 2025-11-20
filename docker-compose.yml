@@ -67,6 +67,21 @@ services:
     networks:
       - jobgenie
 
+  selenium:
+    image: selenium/standalone-chrome:latest
+    container_name: jobgenie-selenium
+    restart: unless-stopped
+    shm_size: "2gb"
+    environment:
+      - SE_NODE_MAX_SESSIONS=1
+      - SE_NODE_SESSION_TIMEOUT=300
+      - SE_VNC_NO_PASSWORD=1
+    ports:
+      - "4444:4444"
+      - "7900:7900" # 👈 VNC / noVNC web UI
+    networks:
+      - jobgenie
+
 volumes:
   pgdata:
   vendor:

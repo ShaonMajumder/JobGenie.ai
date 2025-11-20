@@ -207,7 +207,7 @@ docker-compose up --build -d
 docker-compose exec app php artisan migrate --seed
 ```
 
--   App: http://localhost:8080
+-   App: http://localhost:8000
 -   Postgres: exposed on `localhost:5432`
 
 The `app` service mounts the current workspace, so local file changes are reflected immediately. Run artisan commands via `docker-compose exec app php artisan <command>` and start Vite with `docker-compose exec app npm run dev`.
@@ -333,7 +333,6 @@ If you want:
     Is it possible to rewrite those parts in .env file through web interface?
     If there is no subscription plan, app to show message to setup through web interface
     there is no landing page for jobgenie, need registration with google , login with google is needed
-    
 -   🚧 Adding richer analytics for:
     -   Per-job success probability signals
     -   Which prompts lead to higher ATS scores
@@ -348,12 +347,12 @@ If you want:
 
 ## <a id="pricing"></a>dY', Pricing (Concept)
 
-| Plan               | Mode     | Ideal For              | Highlights                                                                |
-| ------------------ | -------- | ---------------------- | ------------------------------------------------------------------------- |
-| **JobSeeker Free** | Prepaid  | Individual job seekers | 20k prepaid AI tokens with a hard stop, billing portal, invoice archive   |
-| **Pro**            | Postpaid | Power users            | 200k included tokens + overage metering, Gemini/OpenAI ready              |
-| **Team**           | Postpaid | Agencies / bootcamps   | Shared workspaces, pooled token reporting, centralized invoices           |
-| **Token Starter**  | Prepaid  | Token bundle buyers    | Purchase fixed token packs per month with low/out-of-token alerts         |
+| Plan               | Mode     | Ideal For              | Highlights                                                                   |
+| ------------------ | -------- | ---------------------- | ---------------------------------------------------------------------------- |
+| **JobSeeker Free** | Prepaid  | Individual job seekers | 20k prepaid AI tokens with a hard stop, billing portal, invoice archive      |
+| **Pro**            | Postpaid | Power users            | 200k included tokens + overage metering, Gemini/OpenAI ready                 |
+| **Team**           | Postpaid | Agencies / bootcamps   | Shared workspaces, pooled token reporting, centralized invoices              |
+| **Token Starter**  | Prepaid  | Token bundle buyers    | Purchase fixed token packs per month with low/out-of-token alerts            |
 | **Enterprise**     | Hybrid   | Platforms / HR tools   | API access, SSO, custom LLM routing, Stripe-based billing hooks, white-label |
 
 > The open-source foundation focuses on the engine and flows; SaaS pricing is adaptable per market.
