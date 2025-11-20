@@ -75,38 +75,87 @@ class BillingPortalController extends Controller
         ]);
     }
 
+    public function startCheckout(Request $request, SubscriptionPlan $plan)
+    {
+        $user = $request->user();
+        abort_if(! $plan->is_active, 404);
+
+        if ($plan->price_monthly <= 0) {
+            return $this->finalizeSubscription($user, $plan, null);
+        }
+
+        try {
+            $successUrl = route('billing.checkout.success', ['plan' => $plan->id], true).'?session_id={CHECKOUT_SESSION_ID}';
+            $cancelUrl = route('billing.checkout.cancel', [], true);
+
+            $session = $this->stripePayments->createCheckoutSession($user, $plan, $successUrl, $cancelUrl);
+        } catch (Throwable $exception) {
+            report($exception);
+
+            return redirect()
+                ->route('billing.index')
+                ->with('error', 'Unable to start Stripe checkout.');
+        }
+
+        return redirect()->away($session['url']);
+    }
+
+    public function checkoutSuccess(Request $request, SubscriptionPlan $plan)
+    {
+        $sessionId = $request->query('session_id');
+        abort_if(! $sessionId, 404);
+
+        try {
+            $session = $this->stripePayments->retrieveCheckoutSession($sessionId);
+        } catch (Throwable $exception) {
+            report($exception);
+
+            return redirect()
+                ->route('billing.index')
+                ->with('error', 'Unable to verify Stripe checkout.');
+        }
+
+        if (($session->metadata->plan_id ?? null) != $plan->id || (int) ($session->metadata->user_id ?? 0) !== $request->user()->id) {
+            return redirect()
+                ->route('billing.index')
+                ->with('error', 'Checkout session does not match this plan.');
+        }
+
+        if ($session->payment_status !== 'paid' || empty($session->payment_intent)) {
+            return redirect()
+                ->route('billing.index')
+                ->with('error', 'Stripe has not completed this payment.');
+        }
+
+        return $this->finalizeSubscription($request->user(), $plan, $session->payment_intent);
+    }
+
+    public function checkoutCancel()
+    {
+        return redirect()
+            ->route('billing.index')
+            ->with('error', 'Stripe checkout was cancelled.');
+    }
+
     public function subscribe(Request $request, SubscriptionPlan $plan)
     {
         $user = $request->user();
         abort_if(! $plan->is_active, 404);
 
-        $requiresPayment = $plan->price_monthly > 0;
-        $paymentIntentId = $request->string('payment_intent_id')->toString();
-        $paymentIntent = null;
+        $paymentIntentId = $request->filled('payment_intent_id')
+            ? $request->string('payment_intent_id')->toString()
+            : null;
 
-        if ($requiresPayment) {
-            if (! $paymentIntentId) {
-                return redirect()
-                    ->route('billing.index')
-                    ->with('error', 'Payment is required to change plans.');
-            }
+        return $this->finalizeSubscription($user, $plan, $paymentIntentId);
+    }
 
-            try {
-                $paymentIntent = $this->stripePayments->confirmPaymentIntent($user, $plan, $paymentIntentId);
-            } catch (Throwable $exception) {
-                report($exception);
-
-                return redirect()
-                    ->route('billing.index')
-                    ->with('error', 'Unable to verify payment with Stripe.');
-            }
-        }
-
+    private function finalizeSubscription($user, SubscriptionPlan $plan, ?string $paymentIntentId)
+    {
         $isNewSubscription = ! (bool) $user->activeSubscription();
         $updatedSubscription = null;
 
         try {
-            DB::transaction(function () use ($user, $plan, $paymentIntent, &$updatedSubscription): void {
+            DB::transaction(function () use ($user, $plan, $paymentIntentId, &$updatedSubscription): void {
                 $subscription = $user->activeSubscription();
                 $periodStart = now();
                 $periodEnd = now()->addMonth();
@@ -147,7 +196,7 @@ class BillingPortalController extends Controller
                     'period_start' => $periodStart,
                     'period_end' => $periodEnd,
                     'paid_at' => now(),
-                    'stripe_payment_intent_id' => $paymentIntent->id ?? null,
+                    'stripe_payment_intent_id' => $paymentIntentId,
                 ]);
 
                 $this->killBillClient->createInvoiceForSubscription($subscription, $invoice);

@@ -28,7 +28,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->middleware('subscription');
 
     Route::get('/billing', [BillingPortalController::class, 'index'])->name('billing.index');
-    Route::post('/billing/plans/{plan}/intent', [BillingPortalController::class, 'createPaymentIntent'])->name('billing.plan.intent');
+    Route::post('/billing/plans/{plan}/checkout', [BillingPortalController::class, 'startCheckout'])->name('billing.checkout');
+    Route::get('/billing/checkout/{plan}/success', [BillingPortalController::class, 'checkoutSuccess'])->name('billing.checkout.success');
+    Route::get('/billing/checkout/cancel', [BillingPortalController::class, 'checkoutCancel'])->name('billing.checkout.cancel');
     Route::post('/billing/plans/{plan}', [BillingPortalController::class, 'subscribe'])->name('billing.subscribe');
 
     Route::get('/settings/ai', [AiConfigController::class, 'index'])->middleware('admin')->name('settings.ai');

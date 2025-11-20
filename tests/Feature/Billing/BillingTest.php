@@ -191,6 +191,16 @@ class BillingTest extends TestCase
             'payment_intent_id' => 'pi_test',
             'client_secret' => 'secret_test',
         ]);
+        $mock->shouldReceive('createCheckoutSession')->andReturn([
+            'id' => 'cs_test',
+            'url' => 'https://example.com/checkout',
+        ]);
+        $mock->shouldReceive('retrieveCheckoutSession')->andReturn((object) [
+            'id' => 'cs_test',
+            'payment_status' => 'paid',
+            'payment_intent' => 'pi_test',
+            'metadata' => (object) ['plan_id' => 1, 'user_id' => 1],
+        ]);
         $mock->shouldReceive('confirmPaymentIntent')->andReturn((object) [
             'id' => 'pi_test',
             'status' => 'succeeded',

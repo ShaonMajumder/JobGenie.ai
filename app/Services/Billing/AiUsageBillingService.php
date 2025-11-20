@@ -110,8 +110,8 @@ class AiUsageBillingService
     public function calculateCosts(string $provider, string $model, int $inputTokens, int $outputTokens): array
     {
         $pricing = $this->pricingFor($provider, $model);
-        $currency = $this->configService->get('ai.billing.currency')
-            ?? config('ai_pricing.currency', 'USD');
+        $currency = strtoupper($this->configService->get('ai.billing.currency')
+            ?? config('ai_pricing.currency', 'USD'));
 
         $costInput = $this->tokensToCost($inputTokens, $pricing['input_per_1k']);
         $costOutput = $this->tokensToCost($outputTokens, $pricing['output_per_1k']);
