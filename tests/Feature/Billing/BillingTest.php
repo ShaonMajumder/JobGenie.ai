@@ -11,7 +11,6 @@ use App\Models\Subscription;
 use App\Models\SubscriptionPlan;
 use App\Models\User;
 use App\Services\Billing\AiUsageBillingService;
-use App\Services\Billing\KillBillClient;
 use App\Services\Billing\StripePaymentService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Artisan;
@@ -28,7 +27,6 @@ class BillingTest extends TestCase
         parent::setUp();
 
         Mail::fake();
-        $this->mockKillBill();
         $this->mockStripe();
     }
 
@@ -173,24 +171,9 @@ class BillingTest extends TestCase
         $this->assertEquals('USD', $costs['currency']);
     }
 
-    private function mockKillBill(): void
-    {
-        $mock = Mockery::mock(KillBillClient::class);
-        $mock->shouldReceive('createAccount')->andReturn('kb-account');
-        $mock->shouldReceive('createSubscription')->andReturn('kb-sub');
-        $mock->shouldReceive('createInvoiceForSubscription')->andReturnNull();
-        $mock->shouldReceive('markInvoiceAsPaid')->andReturnNull();
-
-        $this->app->instance(KillBillClient::class, $mock);
-    }
-
     private function mockStripe(): void
     {
         $mock = Mockery::mock(StripePaymentService::class);
-        $mock->shouldReceive('createPaymentIntent')->andReturn([
-            'payment_intent_id' => 'pi_test',
-            'client_secret' => 'secret_test',
-        ]);
         $mock->shouldReceive('createCheckoutSession')->andReturn([
             'id' => 'cs_test',
             'url' => 'https://example.com/checkout',

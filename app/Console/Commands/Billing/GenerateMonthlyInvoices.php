@@ -4,16 +4,11 @@ namespace App\Console\Commands\Billing;
 
 use App\Mail\InvoiceGeneratedMail;
 use App\Models\User;
-use App\Services\Billing\KillBillClient;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
 class GenerateMonthlyInvoices
 {
-    public function __construct(private readonly KillBillClient $killBillClient)
-    {
-    }
 
     public function __invoke(): void
     {
@@ -93,15 +88,7 @@ class GenerateMonthlyInvoices
                         'renews_at' => $nextPeriodEnd,
                     ])->save();
 
-                    try {
-                        $this->killBillClient->createInvoiceForSubscription($subscription, $invoice);
-                        Mail::to($user)->send(new InvoiceGeneratedMail($invoice));
-                    } catch (\Throwable $exception) {
-                        Log::warning('Kill Bill sync failed for invoice', [
-                            'invoice_id' => $invoice->id,
-                            'error' => $exception->getMessage(),
-                        ]);
-                    }
+                    Mail::to($user)->send(new InvoiceGeneratedMail($invoice));
                 });
             });
     }

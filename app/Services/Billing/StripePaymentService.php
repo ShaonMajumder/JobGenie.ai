@@ -16,37 +16,6 @@ class StripePaymentService
         //
     }
 
-    /**
-     * @return array{payment_intent_id:string, client_secret:string}
-     */
-    public function createPaymentIntent(User $user, SubscriptionPlan $plan): array
-    {
-        if ($plan->price_monthly <= 0) {
-            throw new RuntimeException('Payment intent is not required for free plans.');
-        }
-
-        $currency = strtolower($plan->currency ?: config('stripe.currency', 'usd'));
-
-        $intent = $this->client()->paymentIntents->create([
-            'amount' => (int) round($plan->price_monthly * 100),
-            'currency' => $currency,
-            'automatic_payment_methods' => [
-                'enabled' => true,
-            ],
-            'metadata' => [
-                'user_id' => $user->id,
-                'subscription_plan_id' => $plan->id,
-                'plan_slug' => $plan->slug,
-            ],
-            'description' => sprintf('%s subscription - %s', config('app.name', 'JobGenie.ai'), $plan->name),
-        ]);
-
-        return [
-            'payment_intent_id' => $intent->id,
-            'client_secret' => $intent->client_secret,
-        ];
-    }
-
     public function confirmPaymentIntent(User $user, SubscriptionPlan $plan, string $paymentIntentId)
     {
         $intent = $this->client()->paymentIntents->retrieve($paymentIntentId);

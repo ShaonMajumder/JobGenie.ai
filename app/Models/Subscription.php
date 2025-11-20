@@ -14,8 +14,6 @@ class Subscription extends Model
     protected $fillable = [
         'user_id',
         'subscription_plan_id',
-        'killbill_account_id',
-        'killbill_subscription_id',
         'status',
         'renews_at',
         'ended_at',

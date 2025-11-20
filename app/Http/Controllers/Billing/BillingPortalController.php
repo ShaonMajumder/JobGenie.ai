@@ -7,7 +7,6 @@ use App\Mail\SubscriptionChangedMail;
 use App\Mail\SubscriptionStartedMail;
 use App\Models\SubscriptionPlan;
 use App\Services\Billing\AiUsageBillingService;
-use App\Services\Billing\KillBillClient;
 use App\Services\Billing\StripePaymentService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -19,7 +18,6 @@ class BillingPortalController extends Controller
 {
     public function __construct(
         private readonly AiUsageBillingService $usageBilling,
-        private readonly KillBillClient $killBillClient,
         private readonly StripePaymentService $stripePayments,
     ) {
     }
@@ -45,33 +43,6 @@ class BillingPortalController extends Controller
                 'remaining' => $remaining,
                 'used' => max(0, $included - $remaining),
             ],
-        ]);
-    }
-
-    public function createPaymentIntent(Request $request, SubscriptionPlan $plan)
-    {
-        abort_if(! $plan->is_active, 404);
-
-        if ($plan->price_monthly <= 0) {
-            return response()->json([
-                'requires_payment' => false,
-            ]);
-        }
-
-        try {
-            $intent = $this->stripePayments->createPaymentIntent($request->user(), $plan);
-        } catch (Throwable $exception) {
-            report($exception);
-
-            return response()->json([
-                'message' => 'Unable to initialize payment. Please try again.',
-            ], 422);
-        }
-
-        return response()->json([
-            'requires_payment' => true,
-            'client_secret' => $intent['client_secret'],
-            'payment_intent_id' => $intent['payment_intent_id'],
         ]);
     }
 
@@ -163,15 +134,10 @@ class BillingPortalController extends Controller
                 $periodStart = now();
                 $periodEnd = now()->addMonth();
 
-                $accountId = $subscription?->killbill_account_id ?? $this->killBillClient->createAccount($user);
-                $subscriptionId = $this->killBillClient->createSubscription($user, $plan);
-
                 if ($subscription) {
                     $subscription->forceFill([
                         'subscription_plan_id' => $plan->id,
                         'status' => 'active',
-                        'killbill_account_id' => $accountId,
-                        'killbill_subscription_id' => $subscriptionId,
                         'current_period_start' => $periodStart,
                         'current_period_end' => $periodEnd,
                         'renews_at' => $periodEnd,
@@ -180,8 +146,6 @@ class BillingPortalController extends Controller
                     $subscription = $user->subscriptions()->create([
                         'subscription_plan_id' => $plan->id,
                         'status' => 'active',
-                        'killbill_account_id' => $accountId,
-                        'killbill_subscription_id' => $subscriptionId,
                         'current_period_start' => $periodStart,
                         'current_period_end' => $periodEnd,
                         'renews_at' => $periodEnd,
@@ -202,7 +166,6 @@ class BillingPortalController extends Controller
                     'stripe_payment_intent_id' => $paymentIntentId,
                 ]);
 
-                $this->killBillClient->createInvoiceForSubscription($subscription, $invoice);
                 $updatedSubscription = $subscription;
             });
         } catch (Throwable $exception) {
