@@ -64,7 +64,7 @@ class StripePaymentService
     public function createCheckoutSession(User $user, SubscriptionPlan $plan, string $successUrl, string $cancelUrl): array
     {
         $session = $this->client()->checkout->sessions->create([
-            'mode' => 'subscription',
+            'mode' => 'payment',
             'success_url' => $successUrl,
             'cancel_url' => $cancelUrl,
             'customer_email' => $user->email,
@@ -82,9 +82,6 @@ class StripePaymentService
                             'description' => $plan->description ?: sprintf('%s plan', $plan->name),
                         ],
                         'unit_amount' => (int) round($plan->price_monthly * 100),
-                        'recurring' => [
-                            'interval' => $this->normalizeInterval($plan->billing_interval),
-                        ],
                     ],
                 ],
             ],
@@ -99,18 +96,6 @@ class StripePaymentService
     public function retrieveCheckoutSession(string $sessionId)
     {
         return $this->client()->checkout->sessions->retrieve($sessionId);
-    }
-
-    private function normalizeInterval(?string $interval): string
-    {
-        $interval = strtolower($interval ?: 'month');
-
-        return match (true) {
-            str_contains($interval, 'year') => 'year',
-            str_contains($interval, 'week') => 'week',
-            str_contains($interval, 'day') => 'day',
-            default => 'month',
-        };
     }
 
     private function client(): StripeClient

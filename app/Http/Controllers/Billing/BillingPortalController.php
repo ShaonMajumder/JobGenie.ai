@@ -115,7 +115,10 @@ class BillingPortalController extends Controller
                 ->with('error', 'Unable to verify Stripe checkout.');
         }
 
-        if (($session->metadata->plan_id ?? null) != $plan->id || (int) ($session->metadata->user_id ?? 0) !== $request->user()->id) {
+        $sessionPlanId = isset($session->metadata->plan_id) ? (int) $session->metadata->plan_id : null;
+        $sessionUserId = isset($session->metadata->user_id) ? (int) $session->metadata->user_id : null;
+
+        if ($sessionPlanId !== (int) $plan->id || $sessionUserId !== (int) $request->user()->id) {
             return redirect()
                 ->route('billing.index')
                 ->with('error', 'Checkout session does not match this plan.');
