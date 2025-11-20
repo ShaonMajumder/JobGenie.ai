@@ -12,6 +12,7 @@ use App\Models\SubscriptionPlan;
 use App\Models\User;
 use App\Services\Billing\AiUsageBillingService;
 use App\Services\Billing\KillBillClient;
+use App\Services\Billing\StripePaymentService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Mail;
@@ -28,6 +29,7 @@ class BillingTest extends TestCase
 
         Mail::fake();
         $this->mockKillBill();
+        $this->mockStripe();
     }
 
     protected function tearDown(): void
@@ -180,5 +182,21 @@ class BillingTest extends TestCase
         $mock->shouldReceive('markInvoiceAsPaid')->andReturnNull();
 
         $this->app->instance(KillBillClient::class, $mock);
+    }
+
+    private function mockStripe(): void
+    {
+        $mock = Mockery::mock(StripePaymentService::class);
+        $mock->shouldReceive('createPaymentIntent')->andReturn([
+            'payment_intent_id' => 'pi_test',
+            'client_secret' => 'secret_test',
+        ]);
+        $mock->shouldReceive('confirmPaymentIntent')->andReturn((object) [
+            'id' => 'pi_test',
+            'status' => 'succeeded',
+            'amount' => 999999,
+        ]);
+
+        $this->app->instance(StripePaymentService::class, $mock);
     }
 }

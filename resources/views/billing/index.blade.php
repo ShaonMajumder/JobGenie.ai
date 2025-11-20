@@ -84,9 +84,18 @@
                                 @endif
                             </div>
                             <div class="mt-4">
-                                <form method="POST" action="{{ route('billing.subscribe', $availablePlan) }}">
+                                <form method="POST" action="{{ route('billing.subscribe', $availablePlan) }}" data-plan-form>
                                     @csrf
-                                    <button type="submit" class="w-full inline-flex justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                                    <input type="hidden" name="payment_intent_id" value="">
+                                    <button
+                                        type="button"
+                                        class="w-full inline-flex justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-60"
+                                        data-plan-button
+                                        data-plan-id="{{ $availablePlan->id }}"
+                                        data-plan-name="{{ $availablePlan->name }}"
+                                        data-plan-price="{{ (float) $availablePlan->price_monthly }}"
+                                        {{ $plan && $plan->id === $availablePlan->id ? 'disabled' : '' }}
+                                    >
                                         {{ $plan && $plan->id === $availablePlan->id ? 'Current Plan' : 'Select Plan' }}
                                     </button>
                                 </form>
@@ -143,4 +152,147 @@
             </div>
         </div>
     </div>
+    <div id="card-modal" class="fixed inset-0 bg-black/40 hidden items-center justify-center px-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 space-y-4">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-xs uppercase text-gray-400 font-semibold">Secure checkout</p>
+                    <h3 id="modal-plan-name" class="text-lg font-semibold text-gray-900"></h3>
+                </div>
+                <button type="button" class="text-gray-400 hover:text-gray-600" data-close-modal>&times;</button>
+            </div>
+            <div id="card-element" class="border border-gray-200 rounded-lg p-3"></div>
+            <p class="text-xs text-gray-500">
+                Use Stripe test cards (e.g. 4242 4242 4242 4242) with any future expiration and CVC.
+            </p>
+            <div class="flex items-center gap-3">
+                <button type="button" class="flex-1 inline-flex justify-center rounded-md border border-gray-200 px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50" data-close-modal>
+                    Cancel
+                </button>
+                <button type="button" id="confirm-card-button" class="flex-1 inline-flex justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-500 disabled:opacity-60">
+                    Confirm &amp; Pay
+                </button>
+            </div>
+            <p id="card-error" class="text-sm text-red-600 hidden"></p>
+        </div>
+    </div>
+
+    @push('scripts')
+        <script src="https://js.stripe.com/v3/"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const publishableKey = @json(config('stripe.publishable_key'));
+                const intentRouteTemplate = @json(route('billing.plan.intent', '__PLAN__'));
+                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? '';
+                const modal = document.getElementById('card-modal');
+                const planNameEl = document.getElementById('modal-plan-name');
+                const errorEl = document.getElementById('card-error');
+                const confirmButton = document.getElementById('confirm-card-button');
+                let stripe;
+                let elements;
+                let cardElement;
+                let activeForm = null;
+                let activePaymentIntent = null;
+
+                if (publishableKey) {
+                    stripe = Stripe(publishableKey);
+                    elements = stripe.elements();
+                    cardElement = elements.create('card');
+                    cardElement.mount('#card-element');
+                }
+
+                const closeModal = () => {
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
+                    errorEl.classList.add('hidden');
+                    errorEl.textContent = '';
+                    confirmButton.disabled = false;
+                    activeForm = null;
+                    activePaymentIntent = null;
+                };
+
+                document.querySelectorAll('[data-close-modal]').forEach((button) => {
+                    button.addEventListener('click', closeModal);
+                });
+
+                document.querySelectorAll('[data-plan-button]').forEach((button) => {
+                    button.addEventListener('click', async () => {
+                        const form = button.closest('form');
+                        const planPrice = parseFloat(button.dataset.planPrice || '0');
+
+                        if (planPrice <= 0 || ! publishableKey) {
+                            return form.submit();
+                        }
+
+                        if (! stripe || ! cardElement) {
+                            alert('Stripe is not configured. Please contact support.');
+                            return;
+                        }
+
+                        button.disabled = true;
+
+                        try {
+                            const intentRoute = intentRouteTemplate.replace('__PLAN__', button.dataset.planId);
+                            const response = await fetch(intentRoute, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': csrfToken,
+                                    'Accept': 'application/json',
+                                },
+                                body: JSON.stringify({}),
+                            });
+
+                            const data = await response.json();
+
+                            if (! response.ok || ! data.client_secret) {
+                                throw new Error(data.message ?? 'Unable to start checkout.');
+                            }
+
+                            activeForm = form;
+                            activePaymentIntent = data.payment_intent_id;
+                            planNameEl.textContent = button.dataset.planName;
+                            modal.classList.remove('hidden');
+                            modal.classList.add('flex');
+                            confirmButton.disabled = false;
+                            confirmButton.dataset.clientSecret = data.client_secret;
+                        } catch (error) {
+                            alert(error.message);
+                        } finally {
+                            button.disabled = false;
+                        }
+                    });
+                });
+
+                confirmButton.addEventListener('click', async () => {
+                    if (! activeForm || ! activePaymentIntent) {
+                        return;
+                    }
+
+                    confirmButton.disabled = true;
+                    errorEl.classList.add('hidden');
+                    errorEl.textContent = '';
+
+                    try {
+                        const { error } = await stripe.confirmCardPayment(confirmButton.dataset.clientSecret, {
+                            payment_method: {
+                                card: cardElement,
+                            },
+                        });
+
+                        if (error) {
+                            throw error;
+                        }
+
+                        activeForm.querySelector('input[name="payment_intent_id"]').value = activePaymentIntent;
+                        activeForm.submit();
+                    } catch (err) {
+                        errorEl.textContent = err.message ?? 'Unable to confirm payment.';
+                        errorEl.classList.remove('hidden');
+                        confirmButton.disabled = false;
+                    }
+                });
+            });
+        </script>
+    @endpush
 </x-app-layout>

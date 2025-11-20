@@ -15,6 +15,7 @@ class Invoice extends Model
         'user_id',
         'subscription_id',
         'killbill_invoice_id',
+        'stripe_payment_intent_id',
         'number',
         'status',
         'amount_subscription',

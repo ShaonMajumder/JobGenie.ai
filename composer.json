@@ -11,7 +11,8 @@
         "gemini-api-php/client": "*",
         "guzzlehttp/guzzle": "^7.10",
         "laravel/framework": "^12.0",
-        "laravel/tinker": "^2.10.1"
+        "laravel/tinker": "^2.10.1",
+        "stripe/stripe-php": "13"
     },
     "require-dev": {
         "laravel/breeze": "^2.3",

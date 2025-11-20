@@ -23,6 +23,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(AiUsageBillingService::class);
         $this->mergeConfigFrom(config_path('billing.php'), 'billing');
         $this->mergeConfigFrom(config_path('ai_pricing.php'), 'ai_pricing');
+        $this->mergeConfigFrom(config_path('stripe.php'), 'stripe');
 
         $this->app->singleton(LlmServiceInterface::class, function ($app) {
             $providerKey = config('llm.provider');

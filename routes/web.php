@@ -28,6 +28,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->middleware('subscription');
 
     Route::get('/billing', [BillingPortalController::class, 'index'])->name('billing.index');
+    Route::post('/billing/plans/{plan}/intent', [BillingPortalController::class, 'createPaymentIntent'])->name('billing.plan.intent');
     Route::post('/billing/plans/{plan}', [BillingPortalController::class, 'subscribe'])->name('billing.subscribe');
 
     Route::get('/settings/ai', [AiConfigController::class, 'index'])->middleware('admin')->name('settings.ai');

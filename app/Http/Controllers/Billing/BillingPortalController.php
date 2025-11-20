@@ -8,6 +8,7 @@ use App\Mail\SubscriptionStartedMail;
 use App\Models\SubscriptionPlan;
 use App\Services\Billing\AiUsageBillingService;
 use App\Services\Billing\KillBillClient;
+use App\Services\Billing\StripePaymentService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -19,6 +20,7 @@ class BillingPortalController extends Controller
     public function __construct(
         private readonly AiUsageBillingService $usageBilling,
         private readonly KillBillClient $killBillClient,
+        private readonly StripePaymentService $stripePayments,
     ) {
     }
 
@@ -46,16 +48,65 @@ class BillingPortalController extends Controller
         ]);
     }
 
+    public function createPaymentIntent(Request $request, SubscriptionPlan $plan)
+    {
+        abort_if(! $plan->is_active, 404);
+
+        if ($plan->price_monthly <= 0) {
+            return response()->json([
+                'requires_payment' => false,
+            ]);
+        }
+
+        try {
+            $intent = $this->stripePayments->createPaymentIntent($request->user(), $plan);
+        } catch (Throwable $exception) {
+            report($exception);
+
+            return response()->json([
+                'message' => 'Unable to initialize payment. Please try again.',
+            ], 422);
+        }
+
+        return response()->json([
+            'requires_payment' => true,
+            'client_secret' => $intent['client_secret'],
+            'payment_intent_id' => $intent['payment_intent_id'],
+        ]);
+    }
+
     public function subscribe(Request $request, SubscriptionPlan $plan)
     {
         $user = $request->user();
         abort_if(! $plan->is_active, 404);
 
+        $requiresPayment = $plan->price_monthly > 0;
+        $paymentIntentId = $request->string('payment_intent_id')->toString();
+        $paymentIntent = null;
+
+        if ($requiresPayment) {
+            if (! $paymentIntentId) {
+                return redirect()
+                    ->route('billing.index')
+                    ->with('error', 'Payment is required to change plans.');
+            }
+
+            try {
+                $paymentIntent = $this->stripePayments->confirmPaymentIntent($user, $plan, $paymentIntentId);
+            } catch (Throwable $exception) {
+                report($exception);
+
+                return redirect()
+                    ->route('billing.index')
+                    ->with('error', 'Unable to verify payment with Stripe.');
+            }
+        }
+
         $isNewSubscription = ! (bool) $user->activeSubscription();
         $updatedSubscription = null;
 
         try {
-            DB::transaction(function () use ($user, $plan, &$updatedSubscription): void {
+            DB::transaction(function () use ($user, $plan, $paymentIntent, &$updatedSubscription): void {
                 $subscription = $user->activeSubscription();
                 $periodStart = now();
                 $periodEnd = now()->addMonth();
@@ -96,6 +147,7 @@ class BillingPortalController extends Controller
                     'period_start' => $periodStart,
                     'period_end' => $periodEnd,
                     'paid_at' => now(),
+                    'stripe_payment_intent_id' => $paymentIntent->id ?? null,
                 ]);
 
                 $this->killBillClient->createInvoiceForSubscription($subscription, $invoice);
